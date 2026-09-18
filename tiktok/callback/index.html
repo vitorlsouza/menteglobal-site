@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Autorização do TikTok — Mente Global Publisher</title>
+  <link rel="icon" href="../../logo.png">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <main class="page">
+    <a class="brand" href="../../">
+      <img src="../../logo.png" alt="" width="44" height="44">
+      <span><strong>MENTE GLOBAL</strong><small>PUBLISHER</small></span>
+    </a>
+
+    <h1 id="title">Autorização do TikTok</h1>
+    <p id="message">Nenhum código recebido nesta página.</p>
+
+    <div class="card" id="result" hidden>
+      <code id="code"></code>
+      <div><button type="button" id="copy">Copiar código</button></div>
+    </div>
+
+    <footer>
+      <a href="../../privacidade/">Política de Privacidade</a>
+      <a href="../../termos/">Termos de Uso</a>
+    </footer>
+  </main>
+
+  <script>
+    // O comando `publisher auth tiktok` aplica decodeURIComponent no que for colado,
+    // entao o codigo precisa ser exibido cru, exatamente como veio na URL.
+    const params = Object.fromEntries(
+      location.search.slice(1).split('&').filter(Boolean).map((pair) => {
+        const index = pair.indexOf('=');
+        return index === -1 ? [pair, ''] : [pair.slice(0, index), pair.slice(index + 1)];
+      }),
+    );
+
+    const readable = (value) => {
+      try {
+        return decodeURIComponent(value.replace(/\+/g, ' '));
+      } catch {
+        return value;
+      }
+    };
+
+    const message = document.getElementById('message');
+
+    if (params.error) {
+      document.getElementById('title').textContent = 'Autorização recusada';
+      message.textContent = readable(params.error_description || params.error);
+    } else if (params.code) {
+      message.textContent = 'Copie o código abaixo e cole no terminal, onde o comando pede "code:".';
+      document.getElementById('code').textContent = params.code;
+      document.getElementById('result').hidden = false;
+
+      const copy = document.getElementById('copy');
+      copy.addEventListener('click', async () => {
+        await navigator.clipboard.writeText(params.code);
+        copy.textContent = 'Copiado';
+      });
+    }
+  </script>
+</body>
+</html>
